@@ -20,6 +20,6 @@ urlpatterns = [
     path('admin/', admin.site.urls,),
     path('user/',include('user.urls')),
     path('lecture/',include('lecture.urls')),
-    # path('employment/',include('employment.urls')),
-    # path('payment/',include('payment.urls')),
+    path('employment/',include('employment.urls')),
+    path('payment/',include('payment.urls')),
 ]

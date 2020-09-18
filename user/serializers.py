@@ -1,22 +1,29 @@
 from rest_framework import serializers
 from user.models import User
 from rest_framework.exceptions import ValidationError
+from employment.models import Employment
+from employment.serializers import empSerializer
+from payment.serializers import PaymentSerializer
 
 class UserCreateSerializer(serializers.ModelSerializer):
-    user_nm=serializers.CharField(required=True,max_length=40)
-    phone=serializers.CharField(required=True,max_length=25)
-    email=serializers.CharField(required=True,max_length=60)
+ 
     
     class Meta:
         model=User
         fields=['user_nm','phone','email']
         
 class UserSerializer(serializers.ModelSerializer):
+     employments=serializers.SerializerMethodField()
+     payments=serializers.SerializerMethodField()
+     def get_employments(self,instance):
+         return empSerializer(instance.employments,many=True).data
+     def get_payments(self,instance):
+        return PaymentSerializer(instance.payments,many=True).data
      class Meta:
          model=User
-         fields='__all__'
+         fields=['id','class_id','user_nm','phone','email','employments','payments']
 
-    
+   
 
     
 
