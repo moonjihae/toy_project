@@ -13,8 +13,11 @@ from django.utils.dateformat import DateFormat
 class PaymentList(APIView):
     #납부 정보 생성
     def post(self,request,format=None):
+        request.data['monthly_pay']=(request.data['monthly_pay']+5)//10*10
+        print(request.data)
         serializer=PaymentCreateSerailizer(data=request.data)
         if serializer.is_valid():
+           
             serializer.save()
             return Response({"success":True},status=status.HTTP_201_CREATED)
 
@@ -57,6 +60,7 @@ class PaymentDetail(APIView):
             payment.payment_amt+=payment.monthly_pay
             if ctp-payment.payment_amt<payment.monthly_pay:
                 payment.monthly_pay=ctp-payment.payment_amt
+                payment.monthly_pay=(payment.monthly_pay+5)//10*10
             if payment.payment_amt==ctp:
                 payment.payment_amt=ctp
                 payment.payment_ym=None
