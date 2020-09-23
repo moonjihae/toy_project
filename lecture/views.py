@@ -14,9 +14,14 @@ import datetime
 class ClassList(APIView):
     #강의 생성
     def post(self,request,format=None):
+        print(request.data['isa_policy'][0]['ctp'])
+        request.data['isa_policy'][0]['ctp']=(request.data['isa_policy'][0]['ctp']+5)//10*10
+        print(request.data['isa_policy'])
         serializer=ClassCreateSerializer(data=request.data)
+        
         if serializer.is_valid():
             serializer.save()
+            
             return Response({'success': True},status=status.HTTP_201_CREATED)
         
         else:

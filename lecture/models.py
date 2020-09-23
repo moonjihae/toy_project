@@ -6,9 +6,9 @@ def default_isa_policy():
        { 
         'ctp' : 0,
         'min_income':0,
-        'limit_term': 0,
+        'limit_term':0 ,
         'deferm_cnt' :0,
-        'pay_per': 0,
+        'pay_per':0 ,
         }
     ]
     
