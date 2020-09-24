@@ -2,6 +2,7 @@ from django.test import TestCase
 from rest_framework import status
 from rest_framework.test import APIClient
 from user.models import User
+from lecture.models import Class
 from django.urls import reverse
 import json 
 
@@ -19,7 +20,7 @@ class UserListTest(TestCase):
     def test_user_registration(self):
         self.assertEqual(self.response.status_code, status.HTTP_201_CREATED)
         
-    def test_get_list_user(self):
+    def test_get_user_list(self):
 
         response =self.client.get(self.url,format='json')
         self.assertEqual(status.HTTP_200_OK,response.status_code)
@@ -46,8 +47,12 @@ class UserDetailTest(TestCase):
         self.assertContains(response,user.id)
         
 
-     def test_UserDetail_updte(self):
-        response=self.client.patch(self.url,{"done":True})
-
+     def test_UserDetail_update(self):
+        response=self.client.patch(self.url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+    
+     def test_UserDetail_delete(self):
+        
+        response=self.client.delete(self.url)
+        self.assertEqual(response.status_code,status.HTTP_204_NO_CONTENT)
 

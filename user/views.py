@@ -53,12 +53,12 @@ class UserDatail(APIView):
         except(user.DoesNotExist):
             return Response({"message":"Record not found"},status=status.HTTP_404_NOT_FOUND)
         payment=Payment.objects.filter(user_id=pk).last()
-        print (payment)
         payment_amt=PaymentSerializer(payment).data['payment_amt']
-        print (payment_amt)
-        if payment_amt is 0:
-            user.delete()
-            return Response({'success': True},status=status.HTTP_200_OK)
-        else :
-            return Response({"message":"이미 납부가 시작되어 삭제 할 수 없습니다."},status=status.HTTP_400_BAD_REQUEST)
-       
+        if payment is not None:
+            if payment_amt is 0:
+                user.delete()
+                return Response({'success': True},status=status.HTTP_204_NO_CONTENT)
+            else :
+                return Response({"message":"이미 납부가 시작되어 삭제 할 수 없습니다."},status=status.HTTP_400_BAD_REQUEST)
+        user.delete()
+        return Response({'success': True},status=status.HTTP_204_NO_CONTENT)

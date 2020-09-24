@@ -14,16 +14,11 @@ import datetime
 class ClassList(APIView):
     #강의 생성
     def post(self,request,format=None):
-        print(request.data['isa_policy'][0]['ctp'])
-        request.data['isa_policy'][0]['ctp']=(request.data['isa_policy'][0]['ctp']+5)//10*10
-        print(request.data['isa_policy'])
+        request.data['isa_policy']['ctp']=(request.data['isa_policy']['ctp']+5)//10*10
         serializer=ClassCreateSerializer(data=request.data)
-        
         if serializer.is_valid():
             serializer.save()
-            
             return Response({'success': True},status=status.HTTP_201_CREATED)
-        
         else:
             return Response({"message":"입력값이 유효하지 않습니다?"},status=status.HTTP_400_BAD_REQUEST)
 
@@ -48,10 +43,15 @@ class ClassDetail(APIView):
         return Response(serializer.data)
     #개별 강의 수정
     def patch(self, request,pk,format=None):
+       
         lecture=self.get_object(pk)
+
         serializer=ClassSerializer(lecture,data=request.data,partial=True)
         if serializer.is_valid():
             serializer.save()
+            lecture.isa_policy['ctp']=(lecture.isa_policy['ctp']+5)//10*10
+            lecture.save()
+
             return Response({"success":True},status=status.HTTP_200_OK)
         return Response({"message":"입력값이 유효하지 않습니다."},status=status.HTTP_400_BAD_REQUEST)
 
@@ -65,15 +65,19 @@ class ClassDetail(APIView):
             
         user=User.objects.filter(class_id=pk)
         user=UserSerializer(user,many=True).data
-        for i in range(len(user)):
-            user_id=user[i]['id']
-            if (Payment.objects.filter(user_id=user_id).exists()):
-                payment=Payment.objects.get(user_id=user_id)
-                payment_amt=PaymentSerializer(payment).data['payment_amt']
-                if(payment_amt>0):
-                    return Response({"message":"삭제 할 수 없습니다."},status=status.HTTP_400_BAD_REQUEST)
-        lecture.delete()
-        return Response({"success":True},status=status.HTTP_200_OK)            
+        if user is not None:
+            for i in range(len(user)):
+                user_id=user[i]['id']
+                if (Payment.objects.filter(user_id=user_id).exists()):
+                    payment=Payment.objects.get(user_id=user_id)
+                    payment_amt=PaymentSerializer(payment).data['payment_amt']
+                    if(payment_amt>0):
+                        return Response({"message":"삭제 할 수 없습니다."},status=status.HTTP_400_BAD_REQUEST)
+            lecture.delete()
+            return Response({"success":True},status=status.HTTP_204_NO_CONTENT)  
+        else :
+            lecture.delete()
+            return Response({"success":True},status=status.HTTP_204_NO_CONTENT)           
        
         
 

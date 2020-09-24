@@ -5,9 +5,6 @@ from .models import default_isa_policy
 
 
 class ClassCreateSerializer(serializers.ModelSerializer):
-
-   
-
     class Meta:
         model=Class
         fields=['class_nm','academy','start_dt','end_dt','isa_policy']
@@ -19,8 +16,6 @@ class ClassCreateSerializer(serializers.ModelSerializer):
             return data
         
   
-            
-
 class ClassSerializer(serializers.ModelSerializer):
     class Meta:
         model=Class
