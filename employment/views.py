@@ -25,41 +25,37 @@ class EmpList(APIView):
         if(user is  None):
             return Response({"message":"해당 회원이 존재하지 않습니다."},status=status.HTTP_400_BAD_REQUEST)
         emps=Employment.objects.filter(user_id=user.id, emp_status = 0)
-       
         if emps.count()!=0:
             return Response({"message":"이미 재직 중인 취업처가 존재합니다"},status=status.HTTP_400_BAD_REQUEST)
         class_id=user.class_id.pk
+        
         if(class_id is not None):
             lecture=Class.objects.get(pk=class_id)
-            limit_term=lecture.isa_policy[0]['limit_term']
+            limit_term=lecture.isa_policy['limit_term']
             limit_term=datetime.datetime.strptime(limit_term,"%Y-%m-%d")
             if((limit_term-datetime.datetime.now()).days>0):
-                min_income=lecture.isa_policy[0]['min_income']  
+                min_income=lecture.isa_policy['min_income']  
                 if (int(request.data['salary'])<min_income):   
                     return Response({"message" : "급여가 최소 급여 조건보다 적습니다."},status=status.HTTP_400_BAD_REQUEST)
                 serializer=EmpCreateSerializer(data=request.data)
                 if(serializer.is_valid()):
                     serializer.save()
                     emp_id=Employment.objects.latest("id")
-                    
                     user_id=User.objects.get(pk=request.data['user_id'])
                     payment_ym=request.data['salary_ym']
-                    
-                    monthly_pay=(int(request.data['salary']))*(lecture.isa_policy[0]['pay_per'])
+                    monthly_pay=(int(request.data['salary']))*(lecture.isa_policy['pay_per'])
                     #1원 반올림해주기
                     monthly_pay=(monthly_pay+5)//10*10
-                    ctp=lecture.isa_policy[0]['ctp']
+                    ctp=lecture.isa_policy['ctp']
                     if monthly_pay>ctp:
                         monthly_pay=ctp
                         monthly_pay=(monthly_pay+5)/10*10
-                    payment_cnt=lecture.isa_policy[0]['deferm_cnt']
+                    payment_cnt=lecture.isa_policy['deferm_cnt']
                     payment_ym=datetime.datetime.strptime(payment_ym,"%Y-%m-%d")
                     diff_months=relativedelta.relativedelta(limit_term,payment_ym).months
             
                     if diff_months <payment_cnt:
-
                         payment_cnt=diff_months
-
                     payment_instance=Payment(emp_id=emp_id,user_id=user_id,payment_ym=payment_ym,
                                             monthly_pay=monthly_pay,payment_cnt=payment_cnt)
                     payment_instance.save()
@@ -71,7 +67,6 @@ class EmpList(APIView):
         queryset=Employment.objects.all()
         serializer=EmpSerializer(queryset,many=True)
         return Response(serializer.data)
-
 
 class EmpDetail(APIView):
     def get_object(self,pk):
@@ -89,7 +84,6 @@ class EmpDetail(APIView):
     #취업 정보 개별 수정
     def patch(self,request,pk,format=None):
         emp=self.get_object(pk)
-        
         serializer=EmpUpdateSerializer(emp,data=request.data,partial=True)
         if emp.emp_status!=0:
             return Response({"message" :"취업 정보 변경을 할 수 없습니다."},status=status.HTTP_400_BAD_REQUEST)
@@ -104,10 +98,8 @@ class EmpDetail(APIView):
             pay_per=lecture.isa_policy[0]['pay_per']
             if (request.data['salary']<lecture.isa_policy[0]['min_income']):
                 return Response ({"message":"급여가 최소 급여 조건보다 적습니다"},status=status.HTTP_400_BAD_REQUEST)
-         
             if payment.payment_amt+(request.data['salary']*pay_per)> ctp:
                 payment.monthly_pay=ctp-payment.payment_amt
-                
             else:
                 payment.monthly_pay=(emp.salary)*pay_per
                 
@@ -133,7 +125,6 @@ class EmpStatus(APIView):
             return Employment.objects.get(pk=pk)
         except Employment.DoesNotExist:
             raise Http404
-
 
     def patch(self,request,pk,format=None):
         employment=self.get_object(pk)
@@ -195,7 +186,6 @@ class EmpStatus(APIView):
                 if serializer.is_valid():
                     serializer.save()
                     return Response({"success":True})
-
         elif status!=0 or status!=1 or status!=2:
             return Response({"message":"상태 정보는 0(재직), 1(퇴사), 2(이직) 중에서만 선택가능합니다."})
         
