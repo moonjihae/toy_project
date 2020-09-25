@@ -6,18 +6,18 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('payment', '0003_auto_20200921_1151'),
+        ("payment", "0003_auto_20200921_1151"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='payment',
-            name='monthly_pay',
+            model_name="payment",
+            name="monthly_pay",
             field=models.IntegerField(default=0),
         ),
         migrations.AlterField(
-            model_name='payment',
-            name='payment_ym',
+            model_name="payment",
+            name="payment_ym",
             field=models.DateField(null=True),
         ),
     ]

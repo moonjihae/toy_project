@@ -8,13 +8,15 @@ import lecture.models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('lecture', '0001_initial'),
+        ("lecture", "0001_initial"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='class',
-            name='isa_policy',
-            field=django.contrib.postgres.fields.jsonb.JSONField(default=lecture.models.default_isa_policy),
+            model_name="class",
+            name="isa_policy",
+            field=django.contrib.postgres.fields.jsonb.JSONField(
+                default=lecture.models.default_isa_policy
+            ),
         ),
     ]

@@ -9,21 +9,40 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('user', '0001_initial'),
-        ('employment', '0001_initial'),
+        ("user", "0001_initial"),
+        ("employment", "0001_initial"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='Payment',
+            name="Payment",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('payment_ym', models.DateField()),
-                ('monthly_pay', models.IntegerField()),
-                ('payment_cnt', models.IntegerField()),
-                ('payment_amt', models.IntegerField(default=0)),
-                ('emp_id', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, to='employment.employment')),
-                ('user_id', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='user.user')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("payment_ym", models.DateField()),
+                ("monthly_pay", models.IntegerField()),
+                ("payment_cnt", models.IntegerField()),
+                ("payment_amt", models.IntegerField(default=0)),
+                (
+                    "emp_id",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.PROTECT,
+                        to="employment.employment",
+                    ),
+                ),
+                (
+                    "user_id",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE, to="user.user"
+                    ),
+                ),
             ],
         ),
     ]

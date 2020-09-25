@@ -6,22 +6,22 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('lecture', '0003_auto_20200916_1506'),
+        ("lecture", "0003_auto_20200916_1506"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='class',
-            name='class_id',
+            model_name="class",
+            name="class_id",
         ),
         migrations.AlterField(
-            model_name='class',
-            name='end_dt',
+            model_name="class",
+            name="end_dt",
             field=models.DateField(),
         ),
         migrations.AlterField(
-            model_name='class',
-            name='start_dt',
+            model_name="class",
+            name="start_dt",
             field=models.DateField(),
         ),
     ]

@@ -9,18 +9,33 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('lecture', '0001_initial'),
+        ("lecture", "0001_initial"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='User',
+            name="User",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('user_nm', models.CharField(max_length=40)),
-                ('phone', models.CharField(max_length=25)),
-                ('email', models.EmailField(max_length=60)),
-                ('class_id', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to='lecture.class')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("user_nm", models.CharField(max_length=40)),
+                ("phone", models.CharField(max_length=25)),
+                ("email", models.EmailField(max_length=60)),
+                (
+                    "class_id",
+                    models.ForeignKey(
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        to="lecture.class",
+                    ),
+                ),
             ],
         ),
     ]

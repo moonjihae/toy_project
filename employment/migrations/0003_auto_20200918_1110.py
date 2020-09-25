@@ -7,19 +7,23 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('user', '0001_initial'),
-        ('employment', '0002_employment_emp_status'),
+        ("user", "0001_initial"),
+        ("employment", "0002_employment_emp_status"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='employment',
-            name='emp_status',
+            model_name="employment",
+            name="emp_status",
             field=models.IntegerField(),
         ),
         migrations.AlterField(
-            model_name='employment',
-            name='user_id',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='employments', to='user.user'),
+            model_name="employment",
+            name="user_id",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="employments",
+                to="user.user",
+            ),
         ),
     ]

@@ -8,20 +8,27 @@ class Migration(migrations.Migration):
 
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name='Class',
+            name="Class",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('class_id', models.IntegerField(null=True)),
-                ('class_nm', models.CharField(max_length=100)),
-                ('academy', models.CharField(max_length=100)),
-                ('start_dt', models.DateField()),
-                ('end_dt', models.DateField()),
-                ('isa_policy', django.contrib.postgres.fields.jsonb.JSONField()),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("class_id", models.IntegerField(null=True)),
+                ("class_nm", models.CharField(max_length=100)),
+                ("academy", models.CharField(max_length=100)),
+                ("start_dt", models.DateField()),
+                ("end_dt", models.DateField()),
+                ("isa_policy", django.contrib.postgres.fields.jsonb.JSONField()),
             ],
         ),
     ]
