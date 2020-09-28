@@ -2,6 +2,7 @@ from django.test import TestCase
 from rest_framework import status
 from rest_framework.test import APIClient
 from lecture.models import Class
+from lecture.serializers import ClassSerializer
 from user.models import User
 from employment.models import Employment
 from payment.models import Payment
@@ -54,8 +55,10 @@ class LectureListTest(TestCase):
 
     def test_get_lecture_list(self):
         response = self.client.get(self.url, format="json")
+        lectures=Class.objects.all()
+        serializer=ClassSerializer(lectures,many=True)
         self.assertEqual(status.HTTP_200_OK, response.status_code)
-        self.assertTrue(len(json.loads(response.content)) == Class.objects.count())
+        self.assertEqual(response.data,serializer.data)
 
 
 class LectureDetailTest(TestCase):
@@ -102,17 +105,16 @@ class LectureDetailTest(TestCase):
             payment_cnt=6,
         )
 
-    def test_LectureDetail_can_get_a_lecture(self):
+    def test_lectureDetail_can_get_a_lecture(self):
         lecture = Class.objects.get()
-        response = self.client.get(
-            reverse("lecture_details", kwargs={"pk": lecture.id}), format="json"
-        )
-        if lecture is None:
-            self.assertEqual(response.status_code, Http404)
-        else:
-            self.assertEqual(response.status_code, status.HTTP_200_OK)
-            self.assertContains(response, lecture.id)
+        response = self.client.get(self.url,format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertContains(response, lecture.id)
 
+    def test_lectureDetail_cannot_get_a_lecture(self):
+        response=self.client.get(reverse("lecture_details",kwargs={"pk":30}))
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+          
     def test_lectureDetail_update(self):
         response = self.client.patch(self.url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
