@@ -27,6 +27,10 @@ class EmpList(APIView):
             return Response(
                 {"message": "해당 회원이 존재하지 않습니다."}, status=status.HTTP_400_BAD_REQUEST
             )
+        if user.class_id is None:
+            return Response(
+                {"message": "수강 중인 강의가 없습니다."}, status=status.HTTP_400_BAD_REQUEST
+            )
         emps = Employment.objects.filter(user_id=user.id, emp_status=0)
         if emps.count() != 0:
             return Response(
@@ -77,6 +81,10 @@ class EmpList(APIView):
                     )
                     payment_instance.save()
                     return Response({"success": True}, status=status.HTTP_201_CREATED)
+            else:
+                return Response(
+            {"message": "납부 기한이 지났습니다."}, status=status.HTTP_400_BAD_REQUEST
+        )
         return Response(
             {"message": "입력값이 유효하지 않습니다."}, status=status.HTTP_400_BAD_REQUEST
         )
