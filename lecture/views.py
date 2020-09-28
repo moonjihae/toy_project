@@ -79,13 +79,15 @@ class ClassDetail(APIView):
             for i in range(len(user)):
                 user_id = user[i]["id"]
                 if Payment.objects.filter(user_id=user_id).exists():
-                    payment = Payment.objects.get(user_id=user_id)
-                    payment_amt = PaymentSerializer(payment).data["payment_amt"]
-                    if payment_amt > 0:
-                        return Response(
-                            {"message": "삭제 할 수 없습니다."},
-                            status=status.HTTP_400_BAD_REQUEST,
-                        )
+                    payment = Payment.objects.filter(user_id=user_id)
+                    payment = PaymentSerializer(payment, many=True).data
+                    if payment is not None:
+                        for i in range(len(payment)):
+                            if payment[i]["payment_amt"] > 0:
+                                return Response(
+                                    {"message": "삭제 할 수 없습니다."},
+                                    status=status.HTTP_400_BAD_REQUEST,
+                                )
             lecture.delete()
             return Response({"success": True}, status=status.HTTP_204_NO_CONTENT)
         else:
