@@ -61,7 +61,7 @@ class UserDetail(APIView):
                 {"message": "Record not found"}, status=status.HTTP_404_NOT_FOUND
             )
         payment = Payment.objects.filter(user_id=pk).last()
-        payment_amt = PaymentSerializer(payment).data["payment_amt"]
+        payment_amt = payment.payment_amt
         if payment is not None:
             if payment_amt is 0:
                 user.delete()

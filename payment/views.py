@@ -22,10 +22,8 @@ class PaymentList(APIView):
         print(request.data)
         serializer = PaymentCreateSerailizer(data=request.data)
         if serializer.is_valid():
-
             serializer.save()
             return Response({"success": True}, status=status.HTTP_201_CREATED)
-
         else:
             return Response({"입력값이 유효하지 않습니다."}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -57,7 +55,7 @@ class PaymentDetail(APIView):
         serializer = PaymentUpdateSerializer(payment, data=request.data)
         class_id = User.objects.get(pk=payment.user_id.pk).class_id.pk
         lecture = Class.objects.get(pk=class_id)
-        ctp = lecture.isa_policy[0]["ctp"]
+        ctp = lecture.isa_policy["ctp"]
         if payment.payment_cnt >= 1:
             payment.payment_ym = payment.payment_ym + datetime.timedelta(days=30)
             payment.payment_ym = payment.payment_ym.strftime("%Y-%m-%d")
