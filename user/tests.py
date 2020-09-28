@@ -2,7 +2,6 @@ from django.test import TestCase
 from rest_framework import status
 from rest_framework.test import APIClient
 from user.models import User
-from user.serializers import UserSerializer
 from payment.models import Payment
 from lecture.models import Class
 from employment.models import Employment
@@ -37,10 +36,8 @@ class UserListTest(TestCase):
 
     def test_get_user_list(self):
         response = self.client.get(self.url, format="json")
-        users = User.objects.all()
-        serializer = UserSerializer(users, many=True)
         self.assertEqual(status.HTTP_200_OK, response.status_code)
-        self.assertEqual(response.data, serializer.data)
+        self.assertTrue(len(json.loads(response.content)) == User.objects.count())
 
 
 class UserDetailTest(TestCase):
@@ -84,13 +81,14 @@ class UserDetailTest(TestCase):
 
     def test_UserDetail_can_get_a_user(self):
         user = User.objects.get()
-        response = self.client.get(self.url, format="json")
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertContains(response, user.id)
-
-    def test_UserDetail_cannot_get_a_user(self):
-        response = self.client.get(reverse("details", kwargs={"pk": 30}))
-        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        response = self.client.get(
+            reverse("details", kwargs={"pk": user.id}), format="json"
+        )
+        if user is None:
+            self.assertEqual(response.status_code, Http404)
+        else:
+            self.assertEqual(response.status_code, status.HTTP_200_OK)
+            self.assertContains(response, user.id)
 
     def test_UserDetail_update(self):
         response = self.client.patch(self.url, {"class_id": self.lecture.id})
