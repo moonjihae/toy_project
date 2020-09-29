@@ -83,8 +83,8 @@ class EmpList(APIView):
                     return Response({"success": True}, status=status.HTTP_201_CREATED)
             else:
                 return Response(
-            {"message": "납부 기한이 지났습니다."}, status=status.HTTP_400_BAD_REQUEST
-        )
+                    {"message": "납부 기한이 지났습니다."}, status=status.HTTP_400_BAD_REQUEST
+                )
         return Response(
             {"message": "입력값이 유효하지 않습니다."}, status=status.HTTP_400_BAD_REQUEST
         )
@@ -124,9 +124,9 @@ class EmpDetail(APIView):
             user = User.objects.get(pk=user_id)
             class_id = UserSerializer(user).data["class_id"]
             lecture = Class.objects.get(pk=class_id)
-            ctp = lecture.isa_policy[0]["ctp"]
-            pay_per = lecture.isa_policy[0]["pay_per"]
-            if request.data["salary"] < lecture.isa_policy[0]["min_income"]:
+            ctp = lecture.isa_policy["ctp"]
+            pay_per = lecture.isa_policy["pay_per"]
+            if request.data["salary"] < lecture.isa_policy["min_income"]:
                 return Response(
                     {"message": "급여가 최소 급여 조건보다 적습니다"},
                     status=status.HTTP_400_BAD_REQUEST,
@@ -149,7 +149,7 @@ class EmpDetail(APIView):
         payment = Payment.objects.get(emp_id=pk)
         if payment.payment_amt is 0:
             employment.delete()
-            return Response({"success": True}, status=status.HTTP_200_OK)
+            return Response({"success": True}, status=status.HTTP_204_NO_CONTENT)
         return Response(
             {"message": "이미 납부가 시작되어 삭제 할 수 없습니다."}, status=status.HTTP_400_BAD_REQUEST
         )
@@ -175,8 +175,8 @@ class EmpStatus(APIView):
                 user = User.objects.get(pk=serializer.data["user_id"])
                 class_id = user.class_id.pk
                 lecture = Class.objects.get(pk=class_id)
-                ctp = lecture.isa_policy[0]["ctp"]
-                payment.monthly_pay = (employment.salary) * lecture.isa_policy[0][
+                ctp = lecture.isa_policy["ctp"]
+                payment.monthly_pay = (employment.salary) * lecture.isa_policy[
                     "pay_per"
                 ]
                 if payment.payment_amt + payment.monthly_pay > ctp:
@@ -191,10 +191,8 @@ class EmpStatus(APIView):
                 serializer = EmpSerializer(employment, data=request.data, partial=True)
                 if serializer.is_valid():
                     serializer.save()
-                    return Response({"success": True})
-                return Response(
-                    {"message": "입력값이 유효하지 않습니다."}, status=status.HTTP_400_BAD_REQUEST
-                )
+                    return Response({"success": True}, status=200)
+
         if status == 1:
             payment = Payment.objects.get(emp_id=pk)
             if payment is not None:
@@ -204,10 +202,8 @@ class EmpStatus(APIView):
                 serializer = EmpSerializer(employment, data=request.data, partial=True)
                 if serializer.is_valid():
                     serializer.save()
-                    return Response({"success": True})
-                return Response(
-                    {"message": "입력값이 유효하지 않습니다."}, status=status.HTTP_400_BAD_REQUEST
-                )
+                    return Response({"success": True}, status=200)
+
         if status == 2:
             payment = Payment.objects.get(emp_id=pk)
             emp = Employment.objects.get(user_id=user_id, emp_status=0)
@@ -218,8 +214,8 @@ class EmpStatus(APIView):
                 user = User.objects.get(pk=serializer.data["user_id"])
                 class_id = user.class_id.pk
                 lecture = Class.objects.get(pk=class_id)
-                ctp = lecture.isa_policy[0]["ctp"]
-                new_payment.monthly_pay = (employment.salary) * lecture.isa_policy[0][
+                ctp = lecture.isa_policy["ctp"]
+                new_payment.monthly_pay = (employment.salary) * lecture.isa_policy[
                     "pay_per"
                 ]
 
@@ -230,7 +226,8 @@ class EmpStatus(APIView):
                 serializer = EmpSerializer(employment, data=request.data, partial=True)
                 if serializer.is_valid():
                     serializer.save()
-                    return Response({"success": True})
+                    return Response({"success": True}, status=200)
 
-        elif status != 0 or status != 1 or status != 2:
-            return Response({"message": "상태 정보는 0(재직), 1(퇴사), 2(이직) 중에서만 선택가능합니다."})
+        return Response(
+            {"message": "상태정보는 0(재직), 1(퇴사), 2(이직) 중에서만 변경 가능합니다."}, status=400
+        )
