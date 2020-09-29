@@ -27,6 +27,7 @@ class UserListTest(TestCase):
             "phone": "",
         }
 
+    # 회원 생성
     def test_user_registration(self):
         self.response = self.client.post(self.url, self.user_data, format="json")
         self.assertEqual(self.response.status_code, status.HTTP_201_CREATED)
@@ -35,6 +36,7 @@ class UserListTest(TestCase):
         self.response = self.client.post(self.url, self.wrong_user_data, format="json")
         self.assertEqual(self.response.status_code, status.HTTP_400_BAD_REQUEST)
 
+    # 회원 리스트 조회
     def test_get_user_list(self):
         response = self.client.get(self.url, format="json")
         users = User.objects.all()
@@ -82,6 +84,7 @@ class UserDetailTest(TestCase):
             payment_cnt=6,
         )
 
+    # 회원 개별 조회
     def test_UserDetail_can_get_a_user(self):
         user = User.objects.get()
         response = self.client.get(self.url, format="json")
@@ -89,9 +92,10 @@ class UserDetailTest(TestCase):
         self.assertContains(response, user.id)
 
     def test_UserDetail_cannot_get_a_user(self):
-        response = self.client.get(reverse("details", kwargs={"pk": 30}))
+        response = self.client.get(reverse("details", kwargs={"pk": 300}))
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
+    # 회원 수정
     def test_UserDetail_update(self):
         response = self.client.patch(self.url, {"class_id": self.lecture.id})
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -101,9 +105,10 @@ class UserDetailTest(TestCase):
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_not_exist_UserDetail_update(self):
-        response = self.client.patch("/user/update/4")
+        response = self.client.patch("/user/30")
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
+    # 회원 삭제
     def test_UserDetail_delete(self):
         payment = Payment.objects.filter(user_id=self.user.id).last()
         payment.payment_amt = 0
@@ -123,5 +128,5 @@ class UserDetailTest(TestCase):
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_not_exist_UserDetail_delete(self):
-        response = self.client.delete("/user//delete/4")
+        response = self.client.delete("/user/30")
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)

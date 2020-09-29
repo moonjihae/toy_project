@@ -164,6 +164,10 @@ class PaymentDetailTest(TestCase):
         )
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
+    def test_not_exist_PaymentDetail_update(self):
+        response = self.client.patch("/payment/300")
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
     # 납부 삭제
     def test_PaymentDetail_delete(self):
         payment = Payment.objects.get()
@@ -178,3 +182,7 @@ class PaymentDetailTest(TestCase):
         payment.save()
         response = self.client.delete(self.url)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_not_exist_PaymentDetail_delete(self):
+        response = self.client.delete("/payment/300")
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)

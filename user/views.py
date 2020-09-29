@@ -33,7 +33,7 @@ class UserDetail(APIView):
         try:
             return User.objects.get(pk=pk)
         except User.DoesNotExist:
-            raise Http404("Record not found")
+            raise Http404
 
     # 개별 회원 정보 조회
     def get(self, request, pk):
@@ -54,13 +54,8 @@ class UserDetail(APIView):
 
     # 개별 회원 정보 삭제
     def delete(self, request, pk, format=None):
-        try:
-            user = self.get_object(pk)
-        except (user.DoesNotExist):
-            return Response(
-                {"message": "Record not found"}, status=status.HTTP_404_NOT_FOUND
-            )
-        payment = Payment.objects.filter(user_id=pk).last()
+        user = self.get_object(pk)
+        payment = Payment.objects.filter(user_id=user.id).last()
         payment_amt = payment.payment_amt
         if payment is not None:
             if payment_amt is 0:

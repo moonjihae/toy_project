@@ -43,6 +43,7 @@ class LectureListTest(TestCase):
             },
         }
 
+    # 강의 생성
     def test_lecture_registration(self):
         self.response = self.client.post(self.url, self.lecture_data, format="json")
         self.assertEqual(self.response.status_code, status.HTTP_201_CREATED)
@@ -53,12 +54,13 @@ class LectureListTest(TestCase):
         )
         self.assertEqual(self.response.status_code, status.HTTP_400_BAD_REQUEST)
 
+    # 강의 리스트 조회
     def test_get_lecture_list(self):
         response = self.client.get(self.url, format="json")
-        lectures=Class.objects.all()
-        serializer=ClassSerializer(lectures,many=True)
+        lectures = Class.objects.all()
+        serializer = ClassSerializer(lectures, many=True)
         self.assertEqual(status.HTTP_200_OK, response.status_code)
-        self.assertEqual(response.data,serializer.data)
+        self.assertEqual(response.data, serializer.data)
 
 
 class LectureDetailTest(TestCase):
@@ -105,25 +107,32 @@ class LectureDetailTest(TestCase):
             payment_cnt=6,
         )
 
-    def test_lectureDetail_can_get_a_lecture(self):
+    # 강의 개별조회
+    def test_LectureDetail_can_get_a_lecture(self):
         lecture = Class.objects.get()
-        response = self.client.get(self.url,format="json")
+        response = self.client.get(self.url, format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertContains(response, lecture.id)
 
-    def test_lectureDetail_cannot_get_a_lecture(self):
-        response=self.client.get(reverse("lecture_details",kwargs={"pk":30}))
+    def test_LectureDetail_cannot_get_a_lecture(self):
+        response = self.client.get(reverse("lecture_details", kwargs={"pk": 30}))
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
-          
-    def test_lectureDetail_update(self):
+
+    # 강의 수정
+    def test_LectureDetail_update(self):
         response = self.client.patch(self.url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-    def test_wrong_lectureDetail_update(self):
+    def test_wrong_LectureDetail_update(self):
         response = self.client.patch(self.url, {"start_dt": "이천이십년 삼월 십일"})
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
-    def test_lectureDetail_delete(self):
+    def test_not_exist_LectureDetail_update(self):
+        response = self.client.patch("/lecture/300")
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    # 강의 삭제
+    def test_LectureDetail_delete(self):
 
         response = self.client.delete(self.url)
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
@@ -142,7 +151,7 @@ class LectureDetailTest(TestCase):
         )
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
-    def test_wrongPayment_lectureDetail_delete(self):
+    def test_wrongPayment_LectureDetail_delete(self):
         wrong_payment = Payment.objects.create(
             emp_id=self.emp,
             user_id=self.user,
@@ -153,3 +162,7 @@ class LectureDetailTest(TestCase):
         )
         response = self.client.delete(self.url)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_not_exist_LectureDetail_delete(self):
+        response = self.client.delete("/lecture/300")
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
