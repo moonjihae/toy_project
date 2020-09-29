@@ -1,6 +1,5 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django.http import Http404
-
 from rest_framework.views import APIView
 from rest_framework import status
 from rest_framework.response import Response
@@ -22,11 +21,8 @@ from collections import OrderedDict
 class EmpList(APIView):
     # 취업 정보 생성
     def post(self, request, format=None):
-        user = User.objects.get(pk=request.data["user_id"])
-        if user is None:
-            return Response(
-                {"message": "해당 회원이 존재하지 않습니다."}, status=status.HTTP_400_BAD_REQUEST
-            )
+        user = get_object_or_404(User, pk=request.data["user_id"])
+
         if user.class_id is None:
             return Response(
                 {"message": "수강 중인 강의가 없습니다."}, status=status.HTTP_400_BAD_REQUEST

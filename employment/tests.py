@@ -23,6 +23,13 @@ class EmpListTest(TestCase):
             "emp_status": 0,
         }
 
+        self.invalid_emp_data = {
+            "company": "test_company",
+            "salary": 2000000,
+            "salary_ym": "2020-09-08",
+            "emp_status": 0,
+            "user_id": 2,
+        }
         self.lecture = Class.objects.create(
             class_nm="test_class",
             academy="test_academy",
@@ -43,14 +50,21 @@ class EmpListTest(TestCase):
             email="test@testuser.com",
             class_id=self.lecture,
         )
+
         user_id = self.user.id
         self.emp_data["user_id"] = user_id
         self.response = self.client.post(self.url, self.emp_data, format="json")
 
+    # 취업 생성
     def test_emp_registration(self):
         self.assertEqual(self.response.status_code, status.HTTP_201_CREATED)
 
     def test_wrongUser_emp_registration(self):
+
+        self.response = self.client.post(self.url, self.invalid_emp_data, format="json")
+        self.assertEqual(self.response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_wrongClass_emp_registration(self):
         self.user.class_id = None
         self.response = self.client.post(self.url, self.emp_data, format="json")
         self.assertEqual(self.response.status_code, status.HTTP_400_BAD_REQUEST)
@@ -60,6 +74,12 @@ class EmpListTest(TestCase):
         self.response = self.client.post(self.url, self.emp_data, format="json")
         self.assertEqual(self.response.status_code, status.HTTP_400_BAD_REQUEST)
 
+    def test_min_income_emp_registration(self):
+        self.emp_data["salary"] = 0
+        self.response = self.client.post(self.url, self.emp_data, format="json")
+        self.assertEqual(self.response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    # 취업 리스트 조회
     def test_get_emp_list(self):
         response = self.client.get(self.url, format="json")
         emps = Employment.objects.all()
@@ -126,6 +146,7 @@ class EmpDetailTest(TestCase):
         )
         self.url = reverse("emp_details", kwargs={"pk": self.emp.id})
 
+    # 취업 개별 조회
     def test_EmpDetail_can_get_a_employment(self):
         emp = Employment.objects.get()
         response = self.client.get(self.url, format="json")
@@ -136,6 +157,7 @@ class EmpDetailTest(TestCase):
         response = self.client.get(reverse("emp_details", kwargs={"pk": 30}))
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
+    # 취업 수정
     def test_EmpDetail_update(self):
         response = self.client.patch(
             self.url,
@@ -169,11 +191,27 @@ class EmpDetailTest(TestCase):
         )
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
+    def test_not_exist_EmpDetail_update(self):
+        response = self.client.patch("/employment/300")
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    # 취업 삭제
     def test_EmpDetail_delete(self):
         payment = Payment.objects.get(emp_id=self.emp.id)
         payment.payment_amt = 0
         response = self.client.delete(self.url)
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+
+    def test_wrong_EmpDetail_delete(self):
+        payment = Payment.objects.get()
+        payment.payment_amt = 1000
+        payment.save()
+        response = self.client.delete(self.url)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_not_exist_EmpDetail_delete(self):
+        response = self.client.patch("/employment/300")
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
 
 class EmpStatusTest(TestCase):
@@ -215,6 +253,7 @@ class EmpStatusTest(TestCase):
         )
         self.url = reverse("emp_status", kwargs={"pk": self.emp.id})
 
+    # 취업 상태 수정
     def test_0_empStatus_update(self):
         response = self.client.patch(
             self.url,
@@ -246,3 +285,7 @@ class EmpStatusTest(TestCase):
             content_type="application/json",
         )
         self.assertEqual(response.status_code, 400)
+
+    def test_not_exist_empStatus_update(self):
+        response = self.client.delete("/employment/status/300")
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
