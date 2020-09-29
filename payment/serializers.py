@@ -12,9 +12,6 @@ class PaymentCreateSerailizer(serializers.ModelSerializer):
 
 
 class PaymentSerializer(serializers.ModelSerializer):
-    # employment=serializers.SerializerMethodField()
-    # def get_employment(self,instance):
-    #     return empSerializer(instance.employment).data
     class Meta:
         model = Payment
         fields = "__all__"
