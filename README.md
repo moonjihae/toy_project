@@ -1,4 +1,4 @@
-# Django Rest Freamework 를 이용한 소득 공유 후불제 관리 서버
+## Django Rest Freamework 를 이용한 소득 공유 후불제 관리 서버
 
 ## 프로젝트 요구사항
 * 모든 기능들은 REST API를 통해 관리되어야 합니다.
